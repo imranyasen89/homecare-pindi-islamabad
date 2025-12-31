@@ -5,7 +5,7 @@ export const services: Service[] = [
     id: 'injection',
     name: 'Injection',
     description: 'Professional intramuscular or subcutaneous injections administered by trained nurses',
-    basePrice: 500,
+    basePrice: 3000,
     estimatedTime: '15-20 min',
     icon: 'Syringe',
   },
@@ -13,7 +13,7 @@ export const services: Service[] = [
     id: 'iv-drip',
     name: 'IV Drip',
     description: 'Intravenous fluid therapy and medication administration',
-    basePrice: 1500,
+    basePrice: 3000,
     estimatedTime: '45-90 min',
     icon: 'Droplets',
   },
@@ -21,7 +21,7 @@ export const services: Service[] = [
     id: 'dressing',
     name: 'Dressing / Wound Care',
     description: 'Professional wound cleaning, dressing change, and care',
-    basePrice: 800,
+    basePrice: 3000,
     estimatedTime: '20-40 min',
     icon: 'Bandage',
   },
@@ -29,7 +29,7 @@ export const services: Service[] = [
     id: 'iv-line',
     name: 'IV Line Insertion',
     description: 'Cannula insertion for intravenous access',
-    basePrice: 1000,
+    basePrice: 3000,
     estimatedTime: '15-25 min',
     icon: 'Activity',
   },
@@ -37,7 +37,7 @@ export const services: Service[] = [
     id: 'lab-sample',
     name: 'Lab Sample Collection',
     description: 'Blood, urine, or other sample collection for laboratory testing',
-    basePrice: 600,
+    basePrice: 3000,
     estimatedTime: '10-20 min',
     icon: 'TestTube',
   },
@@ -48,4 +48,4 @@ export const areaCharges: AreaCharge[] = [
   { area: 'Islamabad', charge: 300 },
 ];
 
-export const CONTACT_NUMBER = '03047070016';
+export const CONTACT_NUMBER = '03357873568';
