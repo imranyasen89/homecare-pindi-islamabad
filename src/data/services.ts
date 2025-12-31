@@ -44,8 +44,8 @@ export const services: Service[] = [
 ];
 
 export const areaCharges: AreaCharge[] = [
-  { area: 'Rawalpindi', charge: 200 },
-  { area: 'Islamabad', charge: 300 },
+  { area: 'Rawalpindi', charge: 800 },
+  { area: 'Islamabad', charge: 1000 },
 ];
 
 export const CONTACT_NUMBER = '03357873568';
