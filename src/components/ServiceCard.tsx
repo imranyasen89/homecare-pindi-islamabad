@@ -42,6 +42,7 @@ export function ServiceCard({ service, isSelected, onToggle }: ServiceCardProps)
             <Checkbox 
               checked={isSelected} 
               onCheckedChange={() => onToggle(service.id)}
+              onClick={(e) => e.stopPropagation()}
               className="border-2"
             />
           </div>
