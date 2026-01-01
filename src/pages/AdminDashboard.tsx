@@ -1,5 +1,7 @@
-import { useState } from 'react';
-import { useRequests } from '@/context/RequestContext';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { useServiceRequests, DbServiceRequest } from '@/hooks/useServiceRequests';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,12 +10,11 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { services } from '@/data/services';
-import { ServiceRequest } from '@/types';
 import { format } from 'date-fns';
 import { 
   Clock, MapPin, Phone, User, FileText, 
   CheckCircle, XCircle, Truck, DollarSign,
-  Calendar, AlertCircle
+  Calendar, AlertCircle, Loader2, LogOut
 } from 'lucide-react';
 
 const statusConfig = {
@@ -24,28 +25,32 @@ const statusConfig = {
   rejected: { label: 'Rejected', color: 'bg-destructive/10 text-destructive border-destructive/30', icon: XCircle },
 };
 
-function RequestCard({ request }: { request: ServiceRequest }) {
-  const { updateRequest } = useRequests();
-  const [finalPrice, setFinalPrice] = useState(request.finalPrice?.toString() || request.estimatedPrice.toString());
-  const [assignedStaff, setAssignedStaff] = useState(request.assignedStaff || '');
+interface RequestCardProps {
+  request: DbServiceRequest;
+  onUpdate: (id: string, updates: Partial<DbServiceRequest>) => void;
+}
+
+function RequestCard({ request, onUpdate }: RequestCardProps) {
+  const [finalPrice, setFinalPrice] = useState(request.final_price?.toString() || request.estimated_price.toString());
+  const [assignedStaff, setAssignedStaff] = useState(request.assigned_staff || '');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const StatusIcon = statusConfig[request.status].icon;
 
-  const handleStatusChange = (status: ServiceRequest['status']) => {
-    updateRequest(request.id, { status });
+  const handleStatusChange = (status: DbServiceRequest['status']) => {
+    onUpdate(request.id, { status });
   };
 
   const handleSaveDetails = () => {
-    updateRequest(request.id, {
-      finalPrice: parseFloat(finalPrice),
-      assignedStaff,
+    onUpdate(request.id, {
+      final_price: parseFloat(finalPrice),
+      assigned_staff: assignedStaff,
     });
     setIsDialogOpen(false);
   };
 
   const handlePaymentToggle = () => {
-    updateRequest(request.id, { paymentReceived: !request.paymentReceived });
+    onUpdate(request.id, { payment_received: !request.payment_received });
   };
 
   const getServiceNames = (serviceIds: string[]) => {
@@ -62,17 +67,17 @@ function RequestCard({ request }: { request: ServiceRequest }) {
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-sm text-muted-foreground">{request.id}</span>
+            <span className="font-mono text-sm text-muted-foreground">{request.id.slice(0, 8)}</span>
             <Badge variant="outline" className={statusConfig[request.status].color}>
               <StatusIcon className="w-3 h-3 mr-1" />
               {statusConfig[request.status].label}
             </Badge>
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            {format(new Date(request.createdAt), 'MMM d, yyyy h:mm a')}
+            {format(new Date(request.created_at), 'MMM d, yyyy h:mm a')}
           </p>
         </div>
-        {request.paymentReceived && (
+        {request.payment_received && (
           <Badge className="bg-success text-success-foreground">
             <DollarSign className="w-3 h-3 mr-1" />
             Paid
@@ -84,12 +89,12 @@ function RequestCard({ request }: { request: ServiceRequest }) {
       <div className="grid gap-2 text-sm">
         <div className="flex items-center gap-2">
           <User className="w-4 h-4 text-muted-foreground" />
-          <span className="font-medium">{request.patientName}</span>
+          <span className="font-medium">{request.patient_name}</span>
         </div>
         <div className="flex items-center gap-2">
           <Phone className="w-4 h-4 text-muted-foreground" />
-          <a href={`tel:${request.mobileNumber}`} className="text-primary hover:underline">
-            {request.mobileNumber}
+          <a href={`tel:${request.mobile_number}`} className="text-primary hover:underline">
+            {request.mobile_number}
           </a>
         </div>
         <div className="flex items-center gap-2">
@@ -98,7 +103,7 @@ function RequestCard({ request }: { request: ServiceRequest }) {
         </div>
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-muted-foreground" />
-          <span>{request.preferredDate} at {request.preferredTime}</span>
+          <span>{request.preferred_date} at {request.preferred_time}</span>
         </div>
       </div>
 
@@ -126,16 +131,16 @@ function RequestCard({ request }: { request: ServiceRequest }) {
       <div className="flex items-center justify-between p-3 bg-primary/5 rounded-lg">
         <div>
           <p className="text-xs text-muted-foreground">
-            {request.finalPrice ? 'Final Price' : 'Estimated Price'}
+            {request.final_price ? 'Final Price' : 'Estimated Price'}
           </p>
           <p className="text-xl font-bold text-primary">
-            Rs. {request.finalPrice || request.estimatedPrice}
+            Rs. {request.final_price || request.estimated_price}
           </p>
         </div>
-        {request.assignedStaff && (
+        {request.assigned_staff && (
           <div className="text-right">
             <p className="text-xs text-muted-foreground">Assigned Staff</p>
-            <p className="font-medium">{request.assignedStaff}</p>
+            <p className="font-medium">{request.assigned_staff}</p>
           </div>
         )}
       </div>
@@ -161,7 +166,7 @@ function RequestCard({ request }: { request: ServiceRequest }) {
           </Button>
         )}
         {request.status === 'on_the_way' && (
-          <Button size="sm" variant="success" onClick={() => handleStatusChange('completed')}>
+          <Button size="sm" variant="default" onClick={() => handleStatusChange('completed')}>
             <CheckCircle className="w-4 h-4 mr-1" />
             Complete
           </Button>
@@ -205,11 +210,11 @@ function RequestCard({ request }: { request: ServiceRequest }) {
 
         <Button 
           size="sm" 
-          variant={request.paymentReceived ? 'secondary' : 'outline'}
+          variant={request.payment_received ? 'secondary' : 'outline'}
           onClick={handlePaymentToggle}
         >
           <DollarSign className="w-4 h-4 mr-1" />
-          {request.paymentReceived ? 'Payment Received' : 'Mark Paid'}
+          {request.payment_received ? 'Payment Received' : 'Mark Paid'}
         </Button>
       </div>
     </Card>
@@ -217,14 +222,57 @@ function RequestCard({ request }: { request: ServiceRequest }) {
 }
 
 export default function AdminDashboard() {
-  const { requests } = useRequests();
+  const navigate = useNavigate();
+  const { user, isLoading: authLoading, isAdmin, signOut } = useAuth();
+  const { requests, isLoading, updateRequest } = useServiceRequests();
   const [statusFilter, setStatusFilter] = useState<string>('all');
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth');
+    }
+  }, [authLoading, user, navigate]);
+
+  if (authLoading || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card className="p-8 text-center max-w-md">
+          <div className="w-16 h-16 rounded-full bg-destructive/10 mx-auto mb-4 flex items-center justify-center">
+            <XCircle className="w-8 h-8 text-destructive" />
+          </div>
+          <h2 className="text-xl font-bold text-foreground">Access Denied</h2>
+          <p className="text-muted-foreground mt-2">You don't have admin privileges to access this page.</p>
+          <Button onClick={signOut} variant="outline" className="mt-4">
+            <LogOut className="w-4 h-4 mr-2" />
+            Sign Out
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   const filteredRequests = statusFilter === 'all' 
     ? requests 
     : requests.filter(r => r.status === statusFilter);
 
   const pendingCount = requests.filter(r => r.status === 'pending').length;
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/auth');
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -236,12 +284,18 @@ export default function AdminDashboard() {
               <h1 className="text-xl font-bold text-foreground">Admin Dashboard</h1>
               <p className="text-sm text-muted-foreground">Manage service requests</p>
             </div>
-            {pendingCount > 0 && (
-              <Badge className="bg-warning text-warning-foreground">
-                <AlertCircle className="w-3 h-3 mr-1" />
-                {pendingCount} New
-              </Badge>
-            )}
+            <div className="flex items-center gap-2">
+              {pendingCount > 0 && (
+                <Badge className="bg-warning text-warning-foreground">
+                  <AlertCircle className="w-3 h-3 mr-1" />
+                  {pendingCount} New
+                </Badge>
+              )}
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                <LogOut className="w-4 h-4 mr-1" />
+                Logout
+              </Button>
+            </div>
           </div>
 
           {/* Filter */}
@@ -280,7 +334,7 @@ export default function AdminDashboard() {
         ) : (
           <div className="grid gap-4">
             {filteredRequests.map(request => (
-              <RequestCard key={request.id} request={request} />
+              <RequestCard key={request.id} request={request} onUpdate={updateRequest} />
             ))}
           </div>
         )}
