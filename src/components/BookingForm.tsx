@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,13 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card } from '@/components/ui/card';
 import { ServiceCard } from './ServiceCard';
 import { services, areaCharges } from '@/data/services';
-import { useRequests } from '@/context/RequestContext';
 import { useToast } from '@/hooks/use-toast';
 import { CalendarDays, Clock, MapPin, User, Phone, FileText, Send } from 'lucide-react';
 
 export function BookingForm() {
   const navigate = useNavigate();
-  const { addRequest } = useRequests();
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -76,22 +75,33 @@ export function BookingForm() {
       ? [...selectedServices, `Other: ${formData.otherService}`]
       : selectedServices;
 
-    addRequest({
-      patientName: formData.patientName,
-      mobileNumber: formData.mobileNumber,
-      services: allServices,
-      preferredDate: formData.preferredDate,
-      preferredTime: formData.preferredTime,
-      address: formData.address,
-      area: formData.area as 'Rawalpindi' | 'Islamabad',
-      notes: formData.notes,
-      estimatedPrice,
-    });
+    try {
+      const { error } = await supabase
+        .from('service_requests')
+        .insert({
+          patient_name: formData.patientName,
+          mobile_number: formData.mobileNumber,
+          services: allServices,
+          preferred_date: formData.preferredDate,
+          preferred_time: formData.preferredTime,
+          address: formData.address,
+          area: formData.area as 'Rawalpindi' | 'Islamabad',
+          notes: formData.notes || null,
+          estimated_price: estimatedPrice,
+        });
 
-    setTimeout(() => {
+      if (error) throw error;
+      
       setIsSubmitting(false);
       navigate('/confirmation');
-    }, 1000);
+    } catch (error: any) {
+      setIsSubmitting(false);
+      toast({
+        title: 'Error submitting request',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
