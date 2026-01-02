@@ -14,7 +14,7 @@ import { format } from 'date-fns';
 import { 
   Clock, MapPin, Phone, User, FileText, 
   CheckCircle, XCircle, Truck, DollarSign,
-  Calendar, AlertCircle, Loader2, LogOut
+  Calendar, AlertCircle, Loader2, LogOut, MessageSquare
 } from 'lucide-react';
 
 const statusConfig = {
@@ -93,9 +93,7 @@ function RequestCard({ request, onUpdate }: RequestCardProps) {
         </div>
         <div className="flex items-center gap-2">
           <Phone className="w-4 h-4 text-muted-foreground" />
-          <a href={`tel:${request.mobile_number}`} className="text-primary hover:underline">
-            {request.mobile_number}
-          </a>
+          <span className="font-medium">{request.mobile_number}</span>
         </div>
         <div className="flex items-center gap-2">
           <MapPin className="w-4 h-4 text-muted-foreground" />
@@ -105,6 +103,32 @@ function RequestCard({ request, onUpdate }: RequestCardProps) {
           <Calendar className="w-4 h-4 text-muted-foreground" />
           <span>{request.preferred_date} at {request.preferred_time}</span>
         </div>
+      </div>
+
+      {/* Contact Patient Buttons */}
+      <div className="flex gap-2">
+        <Button 
+          size="sm" 
+          variant="outline"
+          className="flex-1 bg-success/10 border-success/30 text-success hover:bg-success/20"
+          asChild
+        >
+          <a href={`tel:${request.mobile_number}`}>
+            <Phone className="w-4 h-4 mr-2" />
+            Call Patient
+          </a>
+        </Button>
+        <Button 
+          size="sm" 
+          variant="outline"
+          className="flex-1 bg-primary/10 border-primary/30 text-primary hover:bg-primary/20"
+          asChild
+        >
+          <a href={`sms:${request.mobile_number}?body=Hello ${encodeURIComponent(request.patient_name)}, this is a message regarding your home care service booking.`}>
+            <MessageSquare className="w-4 h-4 mr-2" />
+            SMS Patient
+          </a>
+        </Button>
       </div>
 
       {/* Services */}
