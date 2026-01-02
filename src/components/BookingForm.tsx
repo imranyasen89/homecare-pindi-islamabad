@@ -10,7 +10,7 @@ import { Card } from '@/components/ui/card';
 import { ServiceCard } from './ServiceCard';
 import { services, areaCharges } from '@/data/services';
 import { useToast } from '@/hooks/use-toast';
-import { CalendarDays, Clock, MapPin, User, Phone, FileText, Send } from 'lucide-react';
+import { CalendarDays, Clock, MapPin, User, Phone, FileText, Send, Mail } from 'lucide-react';
 
 export function BookingForm() {
   const navigate = useNavigate();
@@ -19,6 +19,7 @@ export function BookingForm() {
   const [formData, setFormData] = useState({
     patientName: '',
     mobileNumber: '',
+    email: '',
     preferredDate: '',
     preferredTime: '',
     address: '',
@@ -81,6 +82,7 @@ export function BookingForm() {
         .insert({
           patient_name: formData.patientName,
           mobile_number: formData.mobileNumber,
+          email: formData.email || null,
           services: allServices,
           preferred_date: formData.preferredDate,
           preferred_time: formData.preferredTime,
@@ -168,6 +170,21 @@ export function BookingForm() {
                 required
               />
             </div>
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="email">Email (Optional)</Label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              id="email"
+              type="email"
+              placeholder="patient@example.com"
+              className="pl-10"
+              value={formData.email}
+              onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
+            />
           </div>
         </div>
       </Card>

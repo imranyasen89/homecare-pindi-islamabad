@@ -6,6 +6,7 @@ export interface DbServiceRequest {
   id: string;
   patient_name: string;
   mobile_number: string;
+  email: string | null;
   services: string[];
   preferred_date: string;
   preferred_time: string;

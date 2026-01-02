@@ -14,7 +14,7 @@ import { format } from 'date-fns';
 import { 
   Clock, MapPin, Phone, User, FileText, 
   CheckCircle, XCircle, Truck, DollarSign,
-  Calendar, AlertCircle, Loader2, LogOut, MessageSquare
+  Calendar, AlertCircle, Loader2, LogOut, MessageSquare, Mail
 } from 'lucide-react';
 
 const statusConfig = {
@@ -106,29 +106,57 @@ function RequestCard({ request, onUpdate }: RequestCardProps) {
       </div>
 
       {/* Contact Patient Buttons */}
-      <div className="flex gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <Button 
           size="sm" 
           variant="outline"
-          className="flex-1 bg-success/10 border-success/30 text-success hover:bg-success/20"
+          className="bg-success/10 border-success/30 text-success hover:bg-success/20"
           asChild
         >
           <a href={`tel:${request.mobile_number}`}>
-            <Phone className="w-4 h-4 mr-2" />
-            Call Patient
+            <Phone className="w-4 h-4 mr-1" />
+            Call
           </a>
         </Button>
         <Button 
           size="sm" 
           variant="outline"
-          className="flex-1 bg-primary/10 border-primary/30 text-primary hover:bg-primary/20"
+          className="bg-primary/10 border-primary/30 text-primary hover:bg-primary/20"
           asChild
         >
           <a href={`sms:${request.mobile_number}?body=Hello ${encodeURIComponent(request.patient_name)}, this is a message regarding your home care service booking.`}>
-            <MessageSquare className="w-4 h-4 mr-2" />
-            SMS Patient
+            <MessageSquare className="w-4 h-4 mr-1" />
+            SMS
           </a>
         </Button>
+        <Button 
+          size="sm" 
+          variant="outline"
+          className="bg-green-500/10 border-green-500/30 text-green-600 hover:bg-green-500/20"
+          asChild
+        >
+          <a 
+            href={`https://wa.me/${request.mobile_number.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${request.patient_name}, this is a message regarding your home care service booking.`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <MessageSquare className="w-4 h-4 mr-1" />
+            WhatsApp
+          </a>
+        </Button>
+        {request.email && (
+          <Button 
+            size="sm" 
+            variant="outline"
+            className="bg-blue-500/10 border-blue-500/30 text-blue-600 hover:bg-blue-500/20"
+            asChild
+          >
+            <a href={`mailto:${request.email}?subject=Home Care Service Booking&body=Hello ${encodeURIComponent(request.patient_name)},%0D%0A%0D%0AThis is regarding your home care service booking.`}>
+              <Mail className="w-4 h-4 mr-1" />
+              Email
+            </a>
+          </Button>
+        )}
       </div>
 
       {/* Services */}
