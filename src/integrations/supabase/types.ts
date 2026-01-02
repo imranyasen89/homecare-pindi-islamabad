@@ -41,6 +41,7 @@ export type Database = {
           area: string
           assigned_staff: string | null
           created_at: string
+          email: string | null
           estimated_price: number
           final_price: number | null
           id: string
@@ -58,6 +59,7 @@ export type Database = {
           area: string
           assigned_staff?: string | null
           created_at?: string
+          email?: string | null
           estimated_price: number
           final_price?: number | null
           id?: string
@@ -75,6 +77,7 @@ export type Database = {
           area?: string
           assigned_staff?: string | null
           created_at?: string
+          email?: string | null
           estimated_price?: number
           final_price?: number | null
           id?: string
