@@ -55,10 +55,8 @@ export const paymentMethods = {
     name: 'JazzCash',
     number: '03047070016',
   },
-  bankAccount: {
-    name: 'Bank Account',
-    bankName: '', // User to provide
-    accountTitle: '', // User to provide
-    accountNumber: '', // User to provide
+  easyPaisa: {
+    name: 'EasyPaisa',
+    number: '03406829891',
   },
 };

@@ -403,6 +403,14 @@ export default function AdminDashboard() {
 
   const pendingCount = requests.filter(r => r.status === 'pending').length;
 
+  // Financial Summary calculations
+  const completedRequests = requests.filter(r => r.status === 'completed');
+  const totalRevenue = completedRequests.reduce((sum, r) => sum + (r.final_price || r.estimated_price), 0);
+  const paidRevenue = completedRequests.filter(r => r.payment_received).reduce((sum, r) => sum + (r.final_price || r.estimated_price), 0);
+  const unpaidRevenue = totalRevenue - paidRevenue;
+  const completedCount = completedRequests.length;
+  const paidCount = completedRequests.filter(r => r.payment_received).length;
+
   const handleLogout = async () => {
     await signOut();
     navigate('/auth');
@@ -448,6 +456,36 @@ export default function AdminDashboard() {
               </SelectContent>
             </Select>
           </div>
+        </div>
+      </div>
+
+      {/* Financial Summary */}
+      <div className="container py-4 border-b">
+        <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+          <DollarSign className="w-5 h-5 text-primary" />
+          Financial Summary
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <Card className="p-3 bg-primary/5">
+            <p className="text-xs text-muted-foreground">Total Revenue</p>
+            <p className="text-xl font-bold text-primary">Rs. {totalRevenue.toLocaleString()}</p>
+            <p className="text-xs text-muted-foreground">{completedCount} completed</p>
+          </Card>
+          <Card className="p-3 bg-success/10">
+            <p className="text-xs text-muted-foreground">Paid</p>
+            <p className="text-xl font-bold text-success">Rs. {paidRevenue.toLocaleString()}</p>
+            <p className="text-xs text-muted-foreground">{paidCount} payments</p>
+          </Card>
+          <Card className="p-3 bg-warning/10">
+            <p className="text-xs text-muted-foreground">Unpaid</p>
+            <p className="text-xl font-bold text-warning">Rs. {unpaidRevenue.toLocaleString()}</p>
+            <p className="text-xs text-muted-foreground">{completedCount - paidCount} pending</p>
+          </Card>
+          <Card className="p-3 bg-secondary">
+            <p className="text-xs text-muted-foreground">Total Requests</p>
+            <p className="text-xl font-bold">{requests.length}</p>
+            <p className="text-xs text-muted-foreground">{pendingCount} pending</p>
+          </Card>
         </div>
       </div>
 

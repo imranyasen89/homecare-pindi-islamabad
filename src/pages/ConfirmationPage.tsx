@@ -77,12 +77,21 @@ export default function ConfirmationPage() {
             </div>
           </div>
 
-          {/* Bank Account - placeholder for user to fill */}
-          <div className="p-4 bg-blue-500/10 rounded-lg border border-blue-500/30">
-            <p className="font-semibold text-blue-600">Bank Transfer</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Bank details will be shared upon request confirmation
-            </p>
+          {/* EasyPaisa */}
+          <div className="p-4 bg-green-500/10 rounded-lg border border-green-500/30">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-green-600">EasyPaisa</p>
+                <p className="text-lg font-mono">{paymentMethods.easyPaisa.number}</p>
+              </div>
+              <Button 
+                size="sm" 
+                variant="ghost"
+                onClick={() => copyToClipboard(paymentMethods.easyPaisa.number, 'EasyPaisa number')}
+              >
+                <Copy className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
 
           <p className="text-xs text-muted-foreground text-center">
