@@ -279,10 +279,10 @@ export function BookingForm() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Rawalpindi">
-                  Rawalpindi (Travel: Rs. 200)
+                  Rawalpindi (Travel: Rs. 800)
                 </SelectItem>
                 <SelectItem value="Islamabad">
-                  Islamabad (Travel: Rs. 300)
+                  Islamabad (Travel: Rs. 1,000)
                 </SelectItem>
               </SelectContent>
             </Select>
