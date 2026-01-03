@@ -37,8 +37,34 @@ function RequestCard({ request, onUpdate }: RequestCardProps) {
 
   const StatusIcon = statusConfig[request.status].icon;
 
+const getStatusMessage = (status: DbServiceRequest['status']) => {
+    const messages: Record<string, string> = {
+      accepted: `Hello ${request.patient_name}, your home care service request has been ACCEPTED. We will contact you shortly to confirm the schedule.`,
+      on_the_way: `Hello ${request.patient_name}, our medical professional is ON THE WAY to your location. Please be ready.`,
+      completed: `Hello ${request.patient_name}, your service has been COMPLETED. Thank you for choosing us! Please make payment via JazzCash: 03047070016`,
+      rejected: `Hello ${request.patient_name}, we regret to inform you that we are unable to fulfill your request at this time. Please contact us for more details.`,
+    };
+    return messages[status] || `Hello ${request.patient_name}, your request status has been updated to: ${status}`;
+  };
+
   const handleStatusChange = (status: DbServiceRequest['status']) => {
     onUpdate(request.id, { status });
+  };
+
+  const sendStatusUpdateSMS = (status: DbServiceRequest['status']) => {
+    const message = getStatusMessage(status);
+    window.open(`sms:${request.mobile_number}?body=${encodeURIComponent(message)}`, '_blank');
+  };
+
+  const sendStatusUpdateWhatsApp = (status: DbServiceRequest['status']) => {
+    const message = getStatusMessage(status);
+    const phone = request.mobile_number.replace(/[^0-9]/g, '');
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
+  const sendPaymentReceivedNotification = () => {
+    const message = `Hello ${request.patient_name}, we have RECEIVED your payment of Rs. ${request.final_price || request.estimated_price}. Thank you for choosing our services!`;
+    return message;
   };
 
   const handleSaveDetails = () => {
@@ -269,6 +295,62 @@ function RequestCard({ request, onUpdate }: RequestCardProps) {
           {request.payment_received ? 'Payment Received' : 'Mark Paid'}
         </Button>
       </div>
+
+      {/* Status Update Notifications */}
+      {request.status !== 'pending' && (
+        <div className="pt-2 border-t space-y-2">
+          <p className="text-xs font-medium text-muted-foreground">Send Status Update to Patient:</p>
+          <div className="flex gap-2">
+            <Button 
+              size="sm" 
+              variant="outline"
+              className="bg-primary/10 border-primary/30 text-primary hover:bg-primary/20"
+              onClick={() => sendStatusUpdateSMS(request.status)}
+            >
+              <MessageSquare className="w-4 h-4 mr-1" />
+              SMS Update
+            </Button>
+            <Button 
+              size="sm" 
+              variant="outline"
+              className="bg-green-500/10 border-green-500/30 text-green-600 hover:bg-green-500/20"
+              onClick={() => sendStatusUpdateWhatsApp(request.status)}
+            >
+              <MessageSquare className="w-4 h-4 mr-1" />
+              WhatsApp Update
+            </Button>
+          </div>
+          {request.payment_received && (
+            <div className="flex gap-2 mt-2">
+              <Button 
+                size="sm" 
+                variant="outline"
+                className="bg-success/10 border-success/30 text-success hover:bg-success/20"
+                onClick={() => {
+                  const msg = sendPaymentReceivedNotification();
+                  window.open(`sms:${request.mobile_number}?body=${encodeURIComponent(msg)}`, '_blank');
+                }}
+              >
+                <DollarSign className="w-4 h-4 mr-1" />
+                SMS Payment Confirm
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline"
+                className="bg-success/10 border-success/30 text-success hover:bg-success/20"
+                onClick={() => {
+                  const msg = sendPaymentReceivedNotification();
+                  const phone = request.mobile_number.replace(/[^0-9]/g, '');
+                  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+                }}
+              >
+                <DollarSign className="w-4 h-4 mr-1" />
+                WhatsApp Payment
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
     </Card>
   );
 }
