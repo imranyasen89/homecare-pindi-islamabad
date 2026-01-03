@@ -2,9 +2,21 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ContactButtons } from '@/components/ContactButtons';
-import { CheckCircle, Home, Clock } from 'lucide-react';
+import { paymentMethods } from '@/data/services';
+import { CheckCircle, Home, Clock, CreditCard, Copy } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ConfirmationPage() {
+  const { toast } = useToast();
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: 'Copied!',
+      description: `${label} copied to clipboard`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6 animate-scale-in">
@@ -39,6 +51,43 @@ export default function ConfirmationPage() {
             </p>
             <ContactButtons />
           </div>
+        </Card>
+
+        {/* Payment Methods */}
+        <Card className="p-6 space-y-4">
+          <div className="flex items-center gap-2 mb-2">
+            <CreditCard className="w-5 h-5 text-primary" />
+            <h3 className="font-semibold text-foreground">Payment Options</h3>
+          </div>
+          
+          {/* JazzCash */}
+          <div className="p-4 bg-rose-500/10 rounded-lg border border-rose-500/30">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-rose-600">JazzCash</p>
+                <p className="text-lg font-mono">{paymentMethods.jazzCash.number}</p>
+              </div>
+              <Button 
+                size="sm" 
+                variant="ghost"
+                onClick={() => copyToClipboard(paymentMethods.jazzCash.number, 'JazzCash number')}
+              >
+                <Copy className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Bank Account - placeholder for user to fill */}
+          <div className="p-4 bg-blue-500/10 rounded-lg border border-blue-500/30">
+            <p className="font-semibold text-blue-600">Bank Transfer</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Bank details will be shared upon request confirmation
+            </p>
+          </div>
+
+          <p className="text-xs text-muted-foreground text-center">
+            Please send payment after service completion and confirmation from our team
+          </p>
         </Card>
 
         {/* Back Home */}
