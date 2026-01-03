@@ -47,9 +47,10 @@ export default function AuthPage() {
         });
 
         if (error) {
+          console.error('Signup error:', error);
           toast({
             title: 'Signup failed',
-            description: error.message,
+            description: 'Unable to create account. Please try again.',
             variant: 'destructive',
           });
         } else {
@@ -73,9 +74,10 @@ export default function AuthPage() {
               variant: 'destructive',
             });
           } else {
+            console.error('Login error:', error);
             toast({
               title: 'Login failed',
-              description: error.message,
+              description: 'Please check your credentials and try again.',
               variant: 'destructive',
             });
           }

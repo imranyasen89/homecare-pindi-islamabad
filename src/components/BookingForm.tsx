@@ -11,6 +11,20 @@ import { ServiceCard } from './ServiceCard';
 import { services, areaCharges } from '@/data/services';
 import { useToast } from '@/hooks/use-toast';
 import { CalendarDays, Clock, MapPin, User, Phone, FileText, Send, Mail } from 'lucide-react';
+import { z } from 'zod';
+
+// Validation schema
+const bookingSchema = z.object({
+  patientName: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name too long'),
+  mobileNumber: z.string().regex(/^0[0-9]{10}$/, 'Enter valid Pakistani mobile (e.g., 03001234567)'),
+  email: z.string().email('Invalid email').optional().or(z.literal('')),
+  preferredDate: z.string().min(1, 'Date is required'),
+  preferredTime: z.string().min(1, 'Time is required'),
+  address: z.string().min(10, 'Address must be at least 10 characters').max(500, 'Address too long'),
+  area: z.enum(['Rawalpindi', 'Islamabad'], { errorMap: () => ({ message: 'Please select an area' }) }),
+  notes: z.string().max(1000, 'Notes too long').optional().or(z.literal('')),
+  otherService: z.string().max(200, 'Service description too long').optional().or(z.literal('')),
+});
 
 export function BookingForm() {
   const navigate = useNavigate();
@@ -29,6 +43,7 @@ export function BookingForm() {
   });
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [lastSubmitTime, setLastSubmitTime] = useState(0);
 
   const toggleService = (serviceId: string) => {
     setSelectedServices(prev => 
@@ -54,6 +69,19 @@ export function BookingForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Rate limiting - 60 second cooldown
+    const now = Date.now();
+    const SUBMIT_COOLDOWN = 60000;
+    if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
+      const waitTime = Math.ceil((SUBMIT_COOLDOWN - (now - lastSubmitTime)) / 1000);
+      toast({
+        title: 'Please wait',
+        description: `You can submit another request in ${waitTime} seconds.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     if (selectedServices.length === 0 && !formData.otherService.trim()) {
       toast({
         title: 'Please select at least one service',
@@ -62,45 +90,51 @@ export function BookingForm() {
       return;
     }
 
-    if (!formData.area) {
+    // Validate form data with Zod
+    const validationResult = bookingSchema.safeParse(formData);
+    if (!validationResult.success) {
+      const firstError = validationResult.error.errors[0];
       toast({
-        title: 'Please select your area',
+        title: 'Validation Error',
+        description: firstError.message,
         variant: 'destructive',
       });
       return;
     }
 
     setIsSubmitting(true);
+    setLastSubmitTime(now);
 
     const allServices = formData.otherService.trim() 
-      ? [...selectedServices, `Other: ${formData.otherService}`]
+      ? [...selectedServices, `Other: ${formData.otherService.slice(0, 200)}`]
       : selectedServices;
 
     try {
       const { error } = await supabase
         .from('service_requests')
         .insert({
-          patient_name: formData.patientName,
-          mobile_number: formData.mobileNumber,
-          email: formData.email || null,
+          patient_name: formData.patientName.slice(0, 100),
+          mobile_number: formData.mobileNumber.slice(0, 15),
+          email: formData.email ? formData.email.slice(0, 255) : null,
           services: allServices,
           preferred_date: formData.preferredDate,
           preferred_time: formData.preferredTime,
-          address: formData.address,
+          address: formData.address.slice(0, 500),
           area: formData.area as 'Rawalpindi' | 'Islamabad',
-          notes: formData.notes || null,
-          estimated_price: estimatedPrice,
+          notes: formData.notes ? formData.notes.slice(0, 1000) : null,
+          estimated_price: Math.max(0, Math.min(estimatedPrice, 1000000)),
         });
 
       if (error) throw error;
       
       setIsSubmitting(false);
       navigate('/confirmation');
-    } catch (error: any) {
+    } catch (error: unknown) {
       setIsSubmitting(false);
+      console.error('Booking submission failed:', error);
       toast({
-        title: 'Error submitting request',
-        description: error.message,
+        title: 'Unable to submit booking',
+        description: 'Please check your information and try again. If the problem persists, contact support.',
         variant: 'destructive',
       });
     }

@@ -36,10 +36,11 @@ export function useServiceRequests() {
 
       if (error) throw error;
       setRequests((data as DbServiceRequest[]) || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      console.error('Failed to fetch requests:', error);
       toast({
-        title: 'Error fetching requests',
-        description: error.message,
+        title: 'Unable to load requests',
+        description: 'Please refresh the page. Contact support if the issue continues.',
         variant: 'destructive',
       });
     } finally {
@@ -67,10 +68,11 @@ export function useServiceRequests() {
       toast({
         title: 'Request updated',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      console.error('Failed to update request:', error);
       toast({
-        title: 'Error updating request',
-        description: error.message,
+        title: 'Unable to update request',
+        description: 'Please try again. Contact support if the issue continues.',
         variant: 'destructive',
       });
     }
