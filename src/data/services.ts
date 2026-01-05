@@ -51,10 +51,6 @@ export const areaCharges: AreaCharge[] = [
 export const CONTACT_NUMBER = '03357873568';
 
 export const paymentMethods = {
-  jazzCash: {
-    name: 'JazzCash',
-    number: '03047070016',
-  },
   easyPaisa: {
     name: 'EasyPaisa',
     number: '03406829891',

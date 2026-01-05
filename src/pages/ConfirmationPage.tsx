@@ -60,23 +60,6 @@ export default function ConfirmationPage() {
             <h3 className="font-semibold text-foreground">Payment Options</h3>
           </div>
           
-          {/* JazzCash */}
-          <div className="p-4 bg-rose-500/10 rounded-lg border border-rose-500/30">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-semibold text-rose-600">JazzCash</p>
-                <p className="text-lg font-mono">{paymentMethods.jazzCash.number}</p>
-              </div>
-              <Button 
-                size="sm" 
-                variant="ghost"
-                onClick={() => copyToClipboard(paymentMethods.jazzCash.number, 'JazzCash number')}
-              >
-                <Copy className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-
           {/* EasyPaisa */}
           <div className="p-4 bg-green-500/10 rounded-lg border border-green-500/30">
             <div className="flex items-center justify-between">
