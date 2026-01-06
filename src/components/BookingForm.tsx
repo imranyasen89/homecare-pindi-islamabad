@@ -271,7 +271,7 @@ export function BookingForm() {
           <div className="space-y-2">
             <Label htmlFor="area">Area *</Label>
             <Select 
-              value={formData.area} 
+              value={formData.area || undefined} 
               onValueChange={(value: 'Rawalpindi' | 'Islamabad') => setFormData(prev => ({ ...prev, area: value }))}
             >
               <SelectTrigger>
