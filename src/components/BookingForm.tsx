@@ -21,7 +21,7 @@ const bookingSchema = z.object({
   preferredDate: z.string().min(1, 'Date is required'),
   preferredTime: z.string().min(1, 'Time is required'),
   address: z.string().min(10, 'Address must be at least 10 characters').max(500, 'Address too long'),
-  area: z.enum(['Rawalpindi', 'Islamabad'], { errorMap: () => ({ message: 'Please select an area' }) }),
+  area: z.string().refine((val) => val === 'Rawalpindi' || val === 'Islamabad', { message: 'Please select an area' }),
   notes: z.string().max(1000, 'Notes too long').optional().or(z.literal('')),
   otherService: z.string().max(200, 'Service description too long').optional().or(z.literal('')),
 });
