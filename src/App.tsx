@@ -8,6 +8,8 @@ import Index from "./pages/Index";
 import BookingPage from "./pages/BookingPage";
 import ConfirmationPage from "./pages/ConfirmationPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminBlogPage from "./pages/AdminBlogPage";
+import BlogPage from "./pages/BlogPage";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 
@@ -20,14 +22,16 @@ const App = () => (
       <Sonner />
       <HashRouter>
         <Header />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/book" element={<BookingPage />} />
-          <Route path="/confirmation" element={<ConfirmationPage />} />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/book" element={<BookingPage />} />
+            <Route path="/confirmation" element={<ConfirmationPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/blog" element={<AdminBlogPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
       </HashRouter>
     </TooltipProvider>
   </QueryClientProvider>

@@ -39,9 +39,11 @@ export function ServiceCard({ service, isSelected, onToggle }: ServiceCardProps)
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <h3 className="font-semibold text-foreground">{service.name}</h3>
-            <Checkbox 
-              checked={isSelected} 
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={() => onToggle(service.id)}
               onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
               className="border-2"
             />
           </div>
