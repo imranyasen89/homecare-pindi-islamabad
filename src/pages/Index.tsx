@@ -1,3 +1,4 @@
+import type { ElementType } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -6,7 +7,7 @@ import { EmergencyButton } from '@/components/EmergencyButton';
 import { services } from '@/data/services';
 import { Syringe, Droplets, Activity, TestTube, Bandage, ChevronRight, Shield, Clock, MapPin } from 'lucide-react';
 
-const iconMap: Record<string, React.ElementType> = {
+const iconMap: Record<string, ElementType> = {
   Syringe,
   Droplets,
   Activity,
