@@ -41,10 +41,7 @@ export function ServiceCard({ service, isSelected, onToggle }: ServiceCardProps)
             <h3 className="font-semibold text-foreground">{service.name}</h3>
             <Checkbox
               checked={isSelected}
-              onCheckedChange={() => onToggle(service.id)}
-              onClick={(e) => e.stopPropagation()}
-              onPointerDown={(e) => e.stopPropagation()}
-              className="border-2"
+              className="border-2 pointer-events-none"
             />
           </div>
           <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
