@@ -21,16 +21,26 @@ export function Header() {
 
         <nav className="flex items-center gap-2">
           {isAdmin ? (
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/">Patient View</Link>
-            </Button>
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/admin/blog">Blog Manager</Link>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/">Patient View</Link>
+              </Button>
+            </>
           ) : (
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/admin" className="flex items-center gap-2">
-                <Settings className="w-4 h-4" />
-                Admin
-              </Link>
-            </Button>
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/blog">Blog</Link>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/admin" className="flex items-center gap-2">
+                  <Settings className="w-4 h-4" />
+                  Admin
+                </Link>
+              </Button>
+            </>
           )}
         </nav>
       </div>
