@@ -1,7 +1,6 @@
 import { Service } from '@/types';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Card } from '@/components/ui/card';
-import { Syringe, Droplets, Activity, TestTube, Bandage } from 'lucide-react';
+import { Syringe, Droplets, Activity, TestTube, Bandage, Check } from 'lucide-react';
 
 const iconMap: Record<string, React.ElementType> = {
   Syringe,
@@ -39,10 +38,14 @@ export function ServiceCard({ service, isSelected, onToggle }: ServiceCardProps)
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <h3 className="font-semibold text-foreground">{service.name}</h3>
-            <Checkbox
-              checked={isSelected}
-              className="border-2 pointer-events-none"
-            />
+            <span
+              aria-hidden="true"
+              className={`flex h-5 w-5 items-center justify-center rounded-sm border-2 transition-colors ${
+                isSelected ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-background text-transparent'
+              }`}
+            >
+              <Check className="h-3.5 w-3.5" />
+            </span>
           </div>
           <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
             {service.description}
